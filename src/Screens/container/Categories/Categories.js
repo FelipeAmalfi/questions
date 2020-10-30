@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
-import { View } from 'react-native';
+import { View, BackHandler } from 'react-native';
 import { Text } from 'native-base'
 import { FlatList } from 'react-native-gesture-handler';
 import { fetchCategories } from '../../../Service/questionService'
@@ -7,7 +7,6 @@ import { fetchToken } from '../../../Service/tokenService'
 import { styles } from './CategoryStyle'
 import { CategoryItem } from './CategoryItem'
 import { AppContext } from '../../../store/AppContext'
-import { setToken } from '../../../store/Proposal/actions/QuestionActions';
 
 
 
@@ -35,15 +34,19 @@ const Categories = ({ navigation }) => {
 
     }, [getCategories, getApiToken])
 
-    const navigate = useCallback(categoryId => {
+    const navigate = useCallback((categoryId, name) => {
         if (questions.categoryAnswers[categoryId]) {
             let navigateTo = questions.categoryAnswers[categoryId].answers.length < 10 ? 'Questions' : 'Result'
-            navigation.push(navigateTo, { categoryId })
+            navigation.push(navigateTo, { categoryId, name })
         } else {
-            navigation.push('Questions', { categoryId })
+            navigation.push('Questions', { categoryId, name })
         }
     }, [questions])
 
+    useEffect(() => {
+        BackHandler.addEventListener('hardwareBackPress', () => { });
+        return () => BackHandler.removeEventListener('hardwareBackPress', () => { });
+    }, [])
 
     return (
         <>
@@ -55,7 +58,7 @@ const Categories = ({ navigation }) => {
                         renderItem={({ item }) =>
                             <CategoryItem
                                 name={item.name}
-                                onClick={() => navigate(item.id)}
+                                onClick={() => navigate(item.id, item.name)}
                             />}
                         keyExtractor={item => item.id}
                     />

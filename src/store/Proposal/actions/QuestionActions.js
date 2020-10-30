@@ -1,20 +1,19 @@
 
 import { difficulties } from '../Constants/DifficultyConstants'
-import { compareObjects } from '../../../Utils/Utils'
-
+import moment from 'moment'
 
 export function initContext(questions, handleQuestion) {
 
-    async function addAnsweredQuestion(categoryId, difficuty, correct) {
-        await handleQuestion(draft => {
+    function addAnsweredQuestion(categoryId, difficuty, correct, answer) {
+        handleQuestion(draft => {
             draft.categoryAnswers[categoryId].answers.push({
                 difficulty: difficuty,
-                correctAnswer: correct
+                correctAnswer: correct,
+                chosenAnser: answer,
+                answeredDate: moment().format()
             })
         })
-        if (questions.categoryAnswers[categoryId].answers.length >= 2) {
-            handleDifficulty(categoryId)
-        }
+
     }
 
     function newQuestionSet(categoryId) {
@@ -33,13 +32,13 @@ export function initContext(questions, handleQuestion) {
         let { currentDifficulty } = categoryAnswers[categoryId]
         let currentAnswers = categoryAnswers[categoryId].answers
 
-        if (compareObjects(currentAnswers[currentAnswers.length - 1], currentAnswers[currentAnswers.length - 2])) {
+        if (compareAnswers(currentAnswers[currentAnswers.length - 1], currentAnswers[currentAnswers.length - 2])) {
             let lastQuestion = currentAnswers[currentAnswers.length - 1]
             if (lastQuestion.correctAnswer && currentDifficulty < difficulties.HARD) {
-                changeDifficulty(categoryId, currentDifficulty + 1)
+                changeDifficulty(categoryId, lastQuestion.difficulty + 1)
             }
             else if (!lastQuestion.correctAnswer && currentDifficulty > difficulties.EASY) {
-                changeDifficulty(categoryId, currentDifficulty - 1)
+                changeDifficulty(categoryId, lastQuestion.difficulty - 1)
             }
 
         }
@@ -51,7 +50,11 @@ export function initContext(questions, handleQuestion) {
         })
     }
 
-    return { addAnsweredQuestion, newQuestionSet, setToken }
+    function compareAnswers(a1, a2) {
+        return a1.difficulty === a2.difficulty && a1.correctAnswer === a2.correctAnswer
+    }
+
+    return { addAnsweredQuestion, newQuestionSet, setToken, handleDifficulty }
 
 }
 

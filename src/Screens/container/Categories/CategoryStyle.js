@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
         padding: 14,
         backgroundColor: '#efefef',
         borderRadius: 18,
-        borderColor: '#343C58',
+        borderColor: '#888FA6',
         borderWidth: 1,
         alignItems: 'center',
         shadowColor: "#000",
@@ -31,7 +31,7 @@ export const styles = StyleSheet.create({
 
     textItem: {
         fontSize: 18,
-        color: '#343C58',
+        color: '#888FA6',
         fontWeight: 'bold'
     },
 

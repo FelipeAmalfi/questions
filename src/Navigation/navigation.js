@@ -14,9 +14,28 @@ export const MainNavigation = () => {
 
     return (
         <Stack.Navigator initialRouteName='Categories'>
-            <Stack.Screen name="Categories" component={Categories} options={({ route }) => ({ title: route.name })} />
-            <Stack.Screen name="Questions" component={Questions} options={{ title: 'Questions' }} options={({ route }) => ({ title: route.name })} />
-            <Stack.Screen name="Result" component={Result} options={{ title: 'Busca' }} options={({ route }) => ({ title: route.name })} />
+            <Stack.Screen name="Categories" component={Categories}
+                options={() => ({
+                    title: 'Categories',
+                    headerStyle: { backgroundColor: '#343C58' },
+                    headerTintColor: '#fff',
+                    headerLeft: null
+                })} />
+            <Stack.Screen name="Questions" component={Questions}
+                options={{ title: 'Questions' }} options={({ route }) => ({
+                    title: route.params.name,
+                    headerStyle: { backgroundColor: '#343C58' },
+                    headerTintColor: '#fff'
+                }
+                )} />
+            <Stack.Screen name="Result" component={Result}
+                options={{ title: 'Busca' }} options={({ route }) => ({
+                    title: route.params.name,
+                    headerStyle: { backgroundColor: '#343C58' },
+                    headerTintColor: '#fff',
+                    headerLeft: null
+                })} />
         </Stack.Navigator>
+
     )
 }

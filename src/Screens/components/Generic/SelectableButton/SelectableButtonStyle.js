@@ -3,22 +3,34 @@ import { StyleSheet } from 'react-native';
 
 export const styles = (props) => StyleSheet.create({
 
-    button: {
-        backgroundColor: props.selected ? props.color : '#ffffff',
-        padding: 12,
-        borderRadius: 4,
-        borderColor: props.color,
-        borderWidth: 1,
-        flexDirection: 'row',
-        alignItems: 'center'
+
+    cardContainer: {
+        marginBottom: 12,
+        marginLeft: 4,
+        marginRight: 4,
+        padding: 18,
+        backgroundColor: '#efefef',
+        borderRadius: 12,
+        alignItems: 'center',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        alignItems: 'flex-start',
+        minHeight: 100,
+        borderColor: props.selected ? '#4D8AF0' : '#fff',
+        borderWidth: props.selected ? 2 : 0
 
 
     },
 
-    text: {
-        color: props.selected ? '#ffffff' : props.color,
-        fontSize: 14,
-        fontWeight: 'bold',
+    cardText: {
+        color: '#000',
+        fontSize: 16,
         marginLeft: 4
     }
 

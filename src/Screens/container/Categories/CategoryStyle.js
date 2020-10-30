@@ -11,12 +11,20 @@ export const styles = StyleSheet.create({
     },
     cardContainer: {
         marginBottom: 12,
-        padding: 20,
+        padding: 14,
         backgroundColor: '#efefef',
         borderRadius: 18,
         borderColor: '#343C58',
         borderWidth: 1,
-        alignItems: 'center'
+        alignItems: 'center',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
 
     },
 

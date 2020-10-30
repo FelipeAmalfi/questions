@@ -7,12 +7,14 @@ import { fetchToken } from '../../../Service/tokenService'
 import { styles } from './CategoryStyle'
 import { CategoryItem } from './CategoryItem'
 import { AppContext } from '../../../store/AppContext'
+import { setToken } from '../../../store/Proposal/actions/QuestionActions';
 
 
 
 const Categories = ({ navigation }) => {
     const appContext = useContext(AppContext)
-    const { questions, setToken } = appContext
+    const { questions, questionActions } = appContext
+    const { setToken } = questionActions
     const [categories, setCategories] = useState()
 
 

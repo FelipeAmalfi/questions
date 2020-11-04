@@ -9,3 +9,11 @@ export const difficultyLevel = {
     2: 'medium',
     3: 'hard'
 }
+
+
+export const levelStar = {
+    1: '★☆☆',
+    2: '★★☆',
+    3: '★★★'
+
+}

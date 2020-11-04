@@ -66,21 +66,7 @@ export const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 'bold',
     },
-    icon: {
-        fontSize: 16,
-        marginRight: -8
 
-    },
-
-    headerAndroid: {
-        backgroundColor: '#7159c1'
-    },
-
-    headerTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#ffffff'
-    },
 
     spinnerView: {
         alignItems: "center",
@@ -88,38 +74,9 @@ export const styles = StyleSheet.create({
         flex: 1
     },
 
-    errorView: {
-        alignItems: "center",
-        justifyContent: "center",
-        flex: 1,
-        padding: 16
-    },
 
-    errorText: {
-        textAlign: 'center',
-        fontSize: 24
-    },
 
-    errorIcon: {
-        color: '#7159c1',
-        fontSize: 48
-    },
-
-    reloadText: {
-        marginTop: 16,
-        color: '#7b1fa2',
-        fontSize: 24
-    }
 
 
 });
 
-export const dynamicStyles = (props) => StyleSheet.create({
-
-    text: {
-        color: props.color,
-        fontSize: 32,
-        fontWeight: 'bold',
-    },
-
-});

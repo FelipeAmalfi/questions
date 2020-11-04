@@ -1,19 +1,22 @@
-import React, { useEffect, useState, useContext, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useContext, useCallback, useMemo, useRef } from 'react';
 import { View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Text, Spinner } from 'native-base'
-import Button from '../../components/Generic/SelectableButton/SelectableButton'
+
+import SelectableButton from '../../components/Generic/SelectableButton/SelectableButton'
 import { AppContext } from '../../../store/AppContext'
 import { fetchQuestions } from '../../../Service/questionService'
-import { difficulties, difficultyLevel } from '../../../store/Proposal/Constants/DifficultyConstants'
+import { difficulties, difficultyLevel, levelStar } from '../../../store/Proposal/Constants/DifficultyConstants'
 import { styles } from './QuestionStyle'
-import { upperCaseFirstLetter } from '../../../Utils/Utils'
-import HTMLView from 'react-native-htmlview';
+import { upperCaseFirstLetter, removeHTML } from '../../../Utils/Utils'
+import { BottomModal } from '../../components/Generic/BottomModal/BottomModal'
+import { CorrectModal } from '../../components/Common/CorrectModal/CorrectModal'
 
-const levelStar = {
-    1: '★☆☆',
-    2: '★★☆',
-    3: '★★★'
+const constModalVisible = {
+    NONE: 0,
+    ANSWER: 1,
+    CORRECT: 2,
+    NEXT: 3
 
 }
 
@@ -26,26 +29,50 @@ const Questions = ({ navigation, route }) => {
     const [currentQuestion, setCurrentQuestion] = useState(null)
     const [answers, setAnswers] = useState([])
     const [selected, setSelected] = useState(-1)
+    const [answerInfo, setInfo] = useState({})
+    const [modalVisibility, setModalVisibility] = useState(constModalVisible.NONE)
+    const [settedUp, setSettedUp] = useState(false)
 
     const quantity = useMemo(() => categoryAnswers[categoryId] ? categoryAnswers[categoryId].answers.length : 0, [categoryAnswers])
 
     const fetchCategoryQuestions = useCallback(async (difficulty) => {
-        const { response_code, results } = await fetchQuestions(1, categoryId, difficultyLevel[difficulty], token, 'multiple')
+        const { results } = await fetchQuestions(1, categoryId, difficultyLevel[difficulty], token, 'multiple')
         setCurrentQuestion(results[0])
         setAnswers(results[0].incorrect_answers.concat(results[0].correct_answer))
     }, [fetchQuestions, categoryId, questions])
 
 
-    function checkCorrect(answer) {
+    const checkCorrect = useCallback(answer => {
         return answer === currentQuestion.correct_answer
-    }
+    }, [currentQuestion])
 
-    async function answerQuestion(id, categoryId, difficuty, correct, answer) {
+    function selectAnswer(id, correct, answer) {
         setSelected(id)
-        await addAnsweredQuestion(categoryId, difficuty, correct, answer)
+        setInfo({ correct, answer })
+        setModalVisibility(constModalVisible.ANSWER)
     }
 
-    useEffect(() => console.log(questions.categoryAnswers[categoryId]), [questions])
+    const answerQuestion = useCallback(() => {
+        if (questions.categoryAnswers[categoryId]) {
+            addAnsweredQuestion(categoryId, questions.categoryAnswers[categoryId].currentDifficulty, answerInfo.correct, answerInfo.answer)
+            handleModal(constModalVisible.CORRECT)
+            setSelected(-1)
+        }
+    }, [answerInfo, questions.categoryAnswers[categoryId], handleModal])
+
+    const handleModal = useCallback(modalId => {
+        setModalVisibility(constModalVisible.NONE)
+        setTimeout(() => setModalVisibility(modalId), 500)
+    }, [setModalVisibility])
+
+    const next = useCallback(() => {
+        setModalVisibility(constModalVisible.NONE)
+        if (questions.categoryAnswers[categoryId] && questions.categoryAnswers[categoryId].answers.length >= 10) {
+            navigation.push('Result', { categoryId: categoryId, name: name })
+        } else {
+            fetchCategoryQuestions(categoryAnswers[categoryId].currentDifficulty)
+        }
+    }, [questions.categoryAnswers[categoryId], categoryId, name])
 
     useEffect(() => {
         if (questions.categoryAnswers[categoryId] && questions.categoryAnswers[categoryId].answers.length > 1) {
@@ -54,13 +81,16 @@ const Questions = ({ navigation, route }) => {
     }, [questions.categoryAnswers[categoryId]])
 
     useEffect(() => {
-        if (questions.categoryAnswers[categoryId]) {
-            fetchCategoryQuestions(categoryAnswers[categoryId].currentDifficulty)
-        } else {
-            newQuestionSet(categoryId)
+        if (!settedUp) {
+            if (questions.categoryAnswers[categoryId]) {
+                fetchCategoryQuestions(categoryAnswers[categoryId].currentDifficulty)
+            } else {
+                newQuestionSet(categoryId)
+                fetchCategoryQuestions(difficultyLevel[difficulties.MEDIUM])
+            }
+            setSettedUp(true)
         }
-
-    }, [fetchCategoryQuestions, categoryAnswers])
+    }, [])
 
 
     return (
@@ -74,19 +104,15 @@ const Questions = ({ navigation, route }) => {
                             <Text style={styles.ratingText}>{upperCaseFirstLetter(difficultyLevel[categoryAnswers[categoryId].currentDifficulty])}</Text>
                         </View>
                     </View>
-                    <HTMLView
-                        value={currentQuestion.question}
-                        stylesheet={styles.questionTitle}
-                    />
-                    <Text style={styles.questionTitle}>{currentQuestion.question}</Text>
+                    <Text style={styles.questionTitle}>{removeHTML(currentQuestion.question)}</Text>
                     <FlatList
-                        data={answers}
+                        data={answers.sort()}
                         renderItem={({ item: answer, index }) =>
-                            <Button
-                                text={answer}
+                            <SelectableButton
+                                text={removeHTML(answer)}
                                 selected={index === selected}
                                 click={() =>
-                                    answerQuestion(index, categoryId, categoryAnswers[categoryId].currentDifficulty, checkCorrect(answer), answer)
+                                    selectAnswer(index, checkCorrect(answer), answer)
                                 }
                                 keyExtractor={({ index }) => index} />}
 
@@ -98,7 +124,13 @@ const Questions = ({ navigation, route }) => {
                     </View>
                 )
             }
+            <BottomModal visible={modalVisibility === constModalVisible.ANSWER} text={'Answer'} click={() => answerQuestion()} />
+            <BottomModal visible={modalVisibility === constModalVisible.NEXT} text={'Next →'} click={() => next()} />
+            <CorrectModal correct={answerInfo ? answerInfo.correct : false}
+                visible={modalVisibility === constModalVisible.CORRECT}
+                onClose={() => handleModal(constModalVisible.NEXT)} />
         </View>
+
     )
 }
 

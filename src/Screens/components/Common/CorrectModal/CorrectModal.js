@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, TouchableWithoutFeedback } from 'react-native';
-import { Text, Icon } from 'native-base'
+import { Text } from 'native-base'
 import { styles } from './CorrectModalStyle'
 import Modal from 'react-native-modal';
 

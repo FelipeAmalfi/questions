@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Text, Icon, Card, CardItem } from 'native-base'
-import { styles, dynamicStyles } from './CategoryStyle'
+import { Text } from 'native-base'
+import { styles } from './CategoryStyle'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 

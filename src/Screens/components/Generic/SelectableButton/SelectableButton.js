@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text } from 'native-base'
-import { TouchableOpacity, View } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import { styles } from './SelectableButtonStyle'
 
 const SelectableButton = ({ text, click, selected }) => {
